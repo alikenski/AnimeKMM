@@ -13,7 +13,7 @@ import javax.inject.Inject
 class QuotesViewModel @Inject constructor(): ViewModel() {
     private val network = NetworkService()
     private val quoteList = MutableLiveData(emptyList<QuoteModel>())
-    private val page = 1
+    private var page = 1
 
     val state = ScreenState(
         quoteList = quoteList
@@ -22,7 +22,9 @@ class QuotesViewModel @Inject constructor(): ViewModel() {
     fun fetchQuotes() {
         viewModelScope.launch {
             val data = network.getQuotes(page = page)
-            quoteList.postValue(data)
+            val mergedList = quoteList.value?.plus(elements = data)
+            quoteList.postValue(mergedList)
+            page += 1
         }
     }
 }
